@@ -27,13 +27,22 @@ int main(){
     fstream fichier;
     fichier.open("mag_energie.txt", ios::out);
     for(int i_T=0; i_T<30; i_T++) {
-        double TSurTc = 0.05 * i_T;
+        double TSurTc = 1.5 - 0.05 * i_T;
         double beta = beta0 / TSurTc;
-        for(int i=0; i<1e5; i++){
+        for(int i=0; i<1e7; i++){
             ising_metropolis_step(S, beta, B);
         } 
-        double m = S.energieIsing(B);
-        double e = S.magnetisationIsing();
+        double e = 0; 
+        double m = 0; 
+        for (int j = 0; j < 1e3; j++){
+            e += S.energieIsing(B);
+            m += S.magnetisationIsing();
+            for(int k = 0; k < 1e2; k++){
+                ising_metropolis_step(S, beta, B);
+            }
+        }
+        e /= 1e4;
+        m /= 1e4;
         fichier << TSurTc << " " << m << " " << e << endl;
     }
     fichier.close();
@@ -51,9 +60,7 @@ bool ising_metropolis_step(Reseau& S, float beta, float B){
     }
     double r = min(exp(-beta*deltaE),1.);
     //Tire un nb aleatoire entre 0 et 1
-    mt19937 rng;
-    uniform_real_distribution<float> distrib_u01 (0,1);
-    float t = distrib_u01(rng);
+    float t = (float)(rand())/(float)(RAND_MAX);
     bool propValid = (t<r);
     if(propValid){
         S = Sprop;
@@ -62,7 +69,7 @@ bool ising_metropolis_step(Reseau& S, float beta, float B){
 }
 
 int random1_1(){
-    float t = (float)(rand()) / (float)(RAND_MAX);
+    float t = (float)(rand())/(float)(RAND_MAX);
     int a = -1;
     if (t < 0.5){
         a = 1;

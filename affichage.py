@@ -15,8 +15,9 @@ magnet = data[:,1]
 énergie = data[:,2]
 ax1.plot(steps, magnet, alpha=0.7)
 ax2.plot(steps, énergie, alpha=0.7)
-ax1.set_ylim(-1,1)
+ax1.set_ylim(-1.2,1.2)
 ax1.set_ylabel("Magnétisation")
 ax2.set_ylabel("Énergie interne")
-ax2.set_xlabel("Nombre de pas de l'algorithme")
+ax2.set_xlabel("Rapport T/Tc")
+fig.suptitle('Transition de phase du modèle d\'Ising')
 plt.show()
