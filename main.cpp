@@ -5,7 +5,6 @@
 #include<algorithm>
 #include<random>
 #include<fstream>
-#include <SFML/Graphics.hpp>
 #include"complexe_encaps.hpp"
 #include"Reseau.hpp"
 
@@ -15,36 +14,27 @@ bool ising_metropolis_step(Reseau& S, float beta, float B);
 int random1_1();
 int nx = 100;
 int ny = 100;
-double B = 0.1;
+double B = 0;
 
 int main(){
-    double beta = 0.8 * log(1+sqrt(2))/2;
+    double beta0 = log(1+sqrt(2))/2;
     Reseau S(nx,ny,1);
     for(int i=0; i<nx; i++){
         for(int j=0; j < ny; j++){
             S[S.site_xy(i,j)] = random1_1();
         }
     }
-    sf::ContextSettings settings; settings.antialiasingLevel = 8; 
-    sf::RenderWindow win (sf::VideoMode(nx*2,ny*2), "Mon super projet");
-    int steps = 0;
     fstream fichier;
     fichier.open("mag_energie.txt", ios::out);
-    while (win.isOpen()) {
-        for(int i=0; i<1e4; i++){
+    for(int i_T=0; i_T<30; i_T++) {
+        double TSurTc = 0.05 * i_T;
+        double beta = beta0 / TSurTc;
+        for(int i=0; i<1e5; i++){
             ising_metropolis_step(S, beta, B);
         } 
         double m = S.energieIsing(B);
         double e = S.magnetisationIsing();
-        fichier << steps << " " << m << " " << e << endl;
-        steps ++;
-        win.clear(); 
-        sf::Event event;
-        while (win.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) win.close();
-        }
-        S.affiche_SFML(win,0,0);
-        win.display();
+        fichier << TSurTc << " " << m << " " << e << endl;
     }
     fichier.close();
     return 0;
