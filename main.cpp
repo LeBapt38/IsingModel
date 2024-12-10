@@ -16,9 +16,10 @@ int random1_1();
 int nx = 100;
 int ny = 100;
 double B = 0;
+double TSurTc = 0.8;
 
 int main(){
-    double beta = 0.5 * log(1+sqrt(2))/2;
+    double beta = (log(1+sqrt(2))/2) / TSurTc;
     Reseau S(nx,ny,1);
     for(int i=0; i<nx; i++){
         for(int j=0; j < ny; j++){
@@ -62,9 +63,7 @@ bool ising_metropolis_step(Reseau& S, float beta, float B){
     }
     double r = min(exp(-beta*deltaE),1.);
     //Tire un nb aleatoire entre 0 et 1
-    mt19937 rng;
-    uniform_real_distribution<float> distrib_u01 (0,1);
-    float t = distrib_u01(rng);
+    float t = (float)(rand()) / (float)(RAND_MAX);
     bool propValid = (t<r);
     if(propValid){
         S = Sprop;

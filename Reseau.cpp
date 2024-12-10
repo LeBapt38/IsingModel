@@ -47,8 +47,14 @@ Site Reseau::site_index(int index) const{
 }
 
 Site Reseau::site_xy(int x, int y) const{
-    x = std::abs(x % nx);
-    y = std::abs(y % ny);
+    x = x % nx;
+    y = y % ny;
+    if(x < 0){
+        x += nx;
+    }
+    if(y < 0){
+        y += ny;
+    }
     Site a(x*nx + y, x, y);
     return a;
 }
@@ -100,8 +106,8 @@ double Reseau::energieIsing(double B){
         E -= B * tab[i];
         Site XY = site_index(i);
         std::array<Site,4> vois = voisins(XY);
-        for(size_t i = 0; i < vois.size(); i++){
-            E -=0.5*(tab[i] * tab[vois[i]._index]);
+        for(size_t j = 0; j < vois.size(); j++){
+            E -=0.5*(tab[i] * tab[vois[j]._index]);
         }
     }
     return E/(nx*ny);
