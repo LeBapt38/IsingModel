@@ -14,10 +14,11 @@ bool ising_metropolis_step(Reseau& S, float beta, float B);
 int random1_1();
 int nx = 100;
 int ny = 100;
-double B = 0;
+double TSurTc = 1.2;
 
 int main(){
     double beta0 = log(1+sqrt(2))/2;
+    double beta = beta0 / TSurTc;
     Reseau S(nx,ny,1);
     for(int i=0; i<nx; i++){
         for(int j=0; j < ny; j++){
@@ -26,24 +27,56 @@ int main(){
     }
     fstream fichier;
     fichier.open("mag_energie.txt", ios::out);
-    for(int i_T=0; i_T<30; i_T++) {
-        double TSurTc = 1.5 - 0.05 * i_T;
-        double beta = beta0 / TSurTc;
-        for(int i=0; i<1e7; i++){
+    for(double B=0; B<0.2; B+=0.01) {
+        for(int i=0; i<1e6; i++){
             ising_metropolis_step(S, beta, B);
         } 
         double e = 0; 
         double m = 0; 
-        for (int j = 0; j < 1e3; j++){
+        for (int j = 0; j < 1e2; j++){
             e += S.energieIsing(B);
             m += S.magnetisationIsing();
             for(int k = 0; k < 1e2; k++){
                 ising_metropolis_step(S, beta, B);
             }
         }
-        e /= 1e4;
-        m /= 1e4;
-        fichier << TSurTc << " " << m << " " << e << endl;
+        e /= 1e2;
+        m /= 1e2;
+        fichier << B << " " << m << " " << e << endl;
+    }
+    for(double B=0.2; B>-0.2; B-=0.01) {
+        for(int i=0; i<1e6; i++){
+            ising_metropolis_step(S, beta, B);
+        } 
+        double e = 0; 
+        double m = 0; 
+        for (int j = 0; j < 1e2; j++){
+            e += S.energieIsing(B);
+            m += S.magnetisationIsing();
+            for(int k = 0; k < 1e2; k++){
+                ising_metropolis_step(S, beta, B);
+            }
+        }
+        e /= 1e2;
+        m /= 1e2;
+        fichier << B << " " << m << " " << e << endl;
+    }
+    for(double B=-0.2; B<0.2; B+=0.01) {
+        for(int i=0; i<1e6; i++){
+            ising_metropolis_step(S, beta, B);
+        } 
+        double e = 0; 
+        double m = 0; 
+        for (int j = 0; j < 1e2; j++){
+            e += S.energieIsing(B);
+            m += S.magnetisationIsing();
+            for(int k = 0; k < 1e2; k++){
+                ising_metropolis_step(S, beta, B);
+            }
+        }
+        e /= 1e2;
+        m /= 1e2;
+        fichier << B << " " << m << " " << e << endl;
     }
     fichier.close();
     return 0;
