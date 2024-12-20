@@ -16,7 +16,7 @@ int random1_1();
 int nx = 100;
 int ny = 100;
 double B = 0;
-double TSurTc = 0.8;
+double TSurTc = 1.5;
 
 int main(){
     double beta = (log(1+sqrt(2))/2) / TSurTc;
